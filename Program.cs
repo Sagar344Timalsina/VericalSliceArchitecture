@@ -23,6 +23,7 @@ try
     builder.Services.AddOpenApi();
 
     var app = builder.Build();
+    await app.ApplyMigrationsAndSeedAsync();
     app.ConfigureMiddleware();
     app.ConfigureApp(app.Environment);
     // Configure the HTTP request pipeline.

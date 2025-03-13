@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using verticalSliceArchitecture.Features.Upload.Services.Interface;
+using verticalSliceArchitecture.Features.Upload.Services.Implementation;
 
 namespace verticalSliceArchitecture.Infrastructure.Extensions
 {
@@ -23,6 +25,7 @@ namespace verticalSliceArchitecture.Infrastructure.Extensions
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUploadService, UploadService>();
             // Register MediatR - Scans the application for IRequestHandlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 

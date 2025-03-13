@@ -8,5 +8,7 @@
         public string JWTSecret {  get; }
         public string JWTIssuer {  get; }
         public string JWTAudience {  get; }
+        public string Drive { get; }
+        public string Path { get; }
     }
 }

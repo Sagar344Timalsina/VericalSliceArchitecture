@@ -14,10 +14,10 @@ namespace verticalSliceArchitecture.Features.Auth.Services.Implementation
         private ApplicationDbContext _context { get; set; }
         private IPasswordHasher _hasher { get; set; }
         private ITokenProvider _tokenProvider { get; set; }
-        public AuthService(ApplicationDbContext context ,IPasswordHasher hasher,ITokenProvider tokenProvider)
+        public AuthService(ApplicationDbContext context, IPasswordHasher hasher, ITokenProvider tokenProvider)
         {
             _context = context;
-            _hasher= hasher;
+            _hasher = hasher;
             _tokenProvider = tokenProvider;
         }
 
@@ -31,6 +31,11 @@ namespace verticalSliceArchitecture.Features.Auth.Services.Implementation
                 {
                     return Result.Failure(Error.Conflict("User.Duplicate", "User with this email already exists."));
                 }
+                var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+                if (defaultRole == null)
+                {
+                    return Result.Failure(Error.Problem("Role.NotFound", "The default 'User' role could not be found."));
+                }
                 User user = new();
                 user.Password = _hasher.Hash(registerRequestDto.Password);
                 user.RefreshToken = _tokenProvider.CreateRefereshToken();
@@ -38,8 +43,19 @@ namespace verticalSliceArchitecture.Features.Auth.Services.Implementation
                 user.Email = registerRequestDto.Email;
                 user.UserName = registerRequestDto.UserName;
 
+
                 _context.Add(user);
                 await _context.SaveChangesAsync();
+
+                var userRole = new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = defaultRole.Id
+                };
+
+                _context.UserRoles.Add(userRole);
+                await _context.SaveChangesAsync();
+
 
                 return Result.Success("User registered successfully.");
             }
@@ -53,7 +69,8 @@ namespace verticalSliceArchitecture.Features.Auth.Services.Implementation
         {
             try
             {
-                var existingUser = _context.Users.FirstOrDefault(x=>x.Email==loginRequestDto.Email);
+                var existingUser = _context.Users.Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role).FirstOrDefault(x => x.Email == loginRequestDto.Email);
 
                 if (existingUser == null || !_hasher.Verify(loginRequestDto.Password, existingUser.Password))
                 {
@@ -80,14 +97,16 @@ namespace verticalSliceArchitecture.Features.Auth.Services.Implementation
         {
             try
             {
-                var user=_context.Users.FirstOrDefault(x => x.Id == UserId);
+                var user = _context.Users.Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role).FirstOrDefault(x => x.Id == UserId);
+
                 if (user == null || user.RefreshToken != RefreshToken)
                 {
                     return Result.Failure(Error.Failure("Refersh Token", "Invalid or expired refresh token"));
                 }
                 if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
                 {
-                    return Result.Failure(Error.Unauthorize("Refersh Token","Invalid or expired refresh token"));
+                    return Result.Failure(Error.Unauthorize("Refersh Token", "Invalid or expired refresh token"));
                 }
                 var newAccessToken = _tokenProvider.CreateToken(user);
                 var newRefreshToken = _tokenProvider.CreateRefereshToken();

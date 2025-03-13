@@ -41,6 +41,8 @@
     <Folder Include="Features\Email\Queries\" />
     <Folder Include="Features\Email\Serivices\Interface\" />
     <Folder Include="Features\Email\Serivices\Implementation\" />
+    <Folder Include="Features\Upload\Queries\" />
+    <Folder Include="Migrations\" />
     <Folder Include="ServiceManager\" />
   </ItemGroup>
 

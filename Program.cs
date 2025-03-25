@@ -29,10 +29,10 @@ try
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        app.MapOpenApi();
-        app.MapScalarApiReference();
     }
-
+    app.UseCors("AllowAll");
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 
     app.MapControllers();
 

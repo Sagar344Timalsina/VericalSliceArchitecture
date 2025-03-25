@@ -80,6 +80,16 @@ namespace verticalSliceArchitecture.Infrastructure.Extensions
             services.AddHttpContextAccessor();
             services.AddApplicationServices();
             services.AddInfrastructureServices(configuration);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000") // Your frontend origin
+                          .AllowCredentials() // Allow cookies & authentication headers
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
             services.AddControllers();
             services.AddJwtAuthentication(configuration);
 

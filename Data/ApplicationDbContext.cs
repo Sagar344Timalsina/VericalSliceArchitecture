@@ -15,6 +15,9 @@ namespace verticalSliceArchitecture.Data
         public DbSet<UploadFile> Uploads { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<NepaliMonth> NepaliMonth{ get; set; }
+        public DbSet<NepaliCalendar> NepaliCalendar{ get; set; }
+        public DbSet<YearlyMonthDays> YearlyMonthDays{ get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -35,6 +38,19 @@ namespace verticalSliceArchitecture.Data
                 .HasOne(ur => ur.Role)
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId);
+
+            modelBuilder.Entity<NepaliCalendar>()
+              .HasOne(nc => nc.NepaliMonth)
+              .WithMany(nm => nm.NepaliCalendars)
+              .HasForeignKey(nc => nc.MonthId)
+              .OnDelete(DeleteBehavior.Cascade); // Optional, ensures deletion rules
+
+            // Relationship between YearlyMonthDays and NepaliMonth
+            modelBuilder.Entity<YearlyMonthDays>()
+                .HasOne(ymd => ymd.NepaliMonth)
+                .WithMany(nm => nm.YearlyMonthDays) // Ensure this exists in NepaliMonth
+                .HasForeignKey(ymd => ymd.MonthId)
+                .OnDelete(DeleteBehavior.Cascade); // Optional
 
         }
     }

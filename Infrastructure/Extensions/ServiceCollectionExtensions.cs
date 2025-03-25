@@ -15,6 +15,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using verticalSliceArchitecture.Features.Upload.Services.Interface;
 using verticalSliceArchitecture.Features.Upload.Services.Implementation;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
+using verticalSliceArchitecture.Features.Calendar.Services.Implementation;
+using verticalSliceArchitecture.Features.Calendar.Services.Interface;
 
 namespace verticalSliceArchitecture.Infrastructure.Extensions
 {
@@ -26,6 +31,8 @@ namespace verticalSliceArchitecture.Infrastructure.Extensions
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUploadService, UploadService>();
+            services.AddScoped<INepaliCalendarService, NepaliCalendarService>();
+            services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             // Register MediatR - Scans the application for IRequestHandlers
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 

@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Folder Include="Features\Auth\Queries\" />
+    <Folder Include="Features\Calendar\Commands\" />
     <Folder Include="Features\Email\Commands\" />
     <Folder Include="Features\Email\DTOs\" />
     <Folder Include="Features\Email\Queries\" />

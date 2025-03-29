@@ -7,5 +7,6 @@ namespace verticalSliceArchitecture.Features.Calendar.Services.Interface
     public interface INepaliCalendarService
     {
         Task<PaginatedResponse<NepaliCalendarDto>> GetCalendarAsync(CalendarQueryParametersDTO parameters);
+        Task<PaginatedResponse<MonthEndDaysResponseDto>> GetMonthEndDaysAsync(int yearId, int pageNumber, int pageSize);
     }
 }

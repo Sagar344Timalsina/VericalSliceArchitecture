@@ -18,10 +18,16 @@ namespace verticalSliceArchitecture.Features.Calendar.EndPoints
         {
             _mediator = mediator;
         }
-        [HttpGet(Name = "GetNepaliCalendar")]
+        [HttpGet("GetNepaliCalendar")]
         public async Task<IActionResult> GetNepaliCalendar([FromQuery] CalendarQueryParametersDTO queryParameters)
         {
             var result = await _mediator.Send(new GetNepaliCalendar.Query(queryParameters));
+            return Ok(result);
+        }
+        [HttpGet("GetAllMonthEndDays")]
+        public async Task<IActionResult> GetAllMonthEndDays([FromQuery] int YearId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 12)
+        {
+            var result = await _mediator.Send(new GetMonthEndDays(YearId,pageNumber,pageSize));
             return Ok(result);
         }
     }

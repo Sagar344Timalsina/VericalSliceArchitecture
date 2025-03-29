@@ -105,5 +105,55 @@ namespace verticalSliceArchitecture.Features.Calendar.Services.Implementation
                 Links = links 
             };
         }
+
+        public async Task<PaginatedResponse<MonthEndDaysResponseDto>> GetMonthEndDaysAsync(int yearId, int pageNumber, int pageSize)
+        {
+            try
+            {
+                var httpContext = _httpContextAccessor.HttpContext ?? throw new InvalidOperationException("No HttpContext available.");
+                var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext(httpContext, httpContext.GetRouteData(), new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor()));
+                var query = _dbContext.YearlyMonthDays
+                 .Include(nc => nc.NepaliMonth)
+                 .AsQueryable();// Ensure Include() is first
+
+
+
+                if (yearId > 0)
+                    query = query.Where(nc => nc.Year == yearId);
+
+                int totalRecords = await query.CountAsync();
+                var results = await query
+                 .OrderBy(nc => nc.MonthId)
+                 .Skip((pageNumber - 1) * pageSize)
+                 .Take(pageSize)
+                 .Select(nc => new MonthEndDaysResponseDto
+                 {
+                     Id = nc.Id,
+                     Year = nc.Year,
+                     MonthName = nc.NepaliMonth.MonthName,
+                     MonthId = nc.MonthId,
+                     DaysInMonth = nc.DaysInMonth
+                 })
+                 .ToListAsync();
+
+                        var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+                return new PaginatedResponse<MonthEndDaysResponseDto>
+                {
+                    Data = results,
+                    TotalRecords = totalRecords,
+                    TotalPages = totalPages,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
     }
 }
